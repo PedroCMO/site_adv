@@ -1,0 +1,13 @@
+# Ambientes virtuais e cache
+venv/
+__pycache__/
+*.pyc
+
+# Banco de dados local (nunca envie os dados reais de teste para o github)
+db.sqlite3
+
+# Arquivos de mídia (as fotos de teste que você subiu)
+media/
+
+# Arquivos de variáveis ocultas (O MAIS IMPORTANTE)
+.env
