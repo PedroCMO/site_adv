@@ -37,7 +37,6 @@ class ImagemSiteViewSet(viewsets.ReadOnlyModelViewSet):
 @api_view(['GET'])
 @permission_classes([IsAdminUser])
 def sincronizar_leis(request):
-
     pasta_base = os.path.join(settings.BASE_DIR, 'dados_leis')
 
     lista_de_leis = [
@@ -52,11 +51,13 @@ def sincronizar_leis(request):
         {"txt": "bloco_humanidades_extra/SUPER_BLOCO_HUMANIDADES_EXTRA.txt", "categoria": "humanidades"}
     ]
 
-    total_processado = 0
+    ArtigoLei.objects.all().delete()
+    
+    artigos_para_guardar = []
 
     for lei in lista_de_leis:
         caminho_do_arquivo = os.path.join(pasta_base, lei['txt'])
-    
+        
         if not os.path.exists(caminho_do_arquivo):
             continue
 
@@ -74,13 +75,9 @@ def sincronizar_leis(request):
 
                 if len(linha_fatiada) > 1 and linha_fatiada[0] == "Art.":
                     if acumulador != "":
-                        # A MÁGICA: Em vez do dicionário, salvamos no PostgreSQL!
-                        ArtigoLei.objects.update_or_create(
-                            categoria=lei['categoria'],
-                            numero=acumulador,
-                            defaults={'conteudo': "\n".join(chave)}
+                        artigos_para_guardar.append(
+                            ArtigoLei(categoria=lei['categoria'], numero=acumulador, conteudo="\n".join(chave))
                         )
-                        total_processado += 1
 
                     chave = []
                     acumulador = f"{linha_fatiada[0]} {linha_fatiada[1]}"
@@ -91,16 +88,13 @@ def sincronizar_leis(request):
                     break
                     
             if acumulador != "":
-                ArtigoLei.objects.update_or_create(
-                    categoria=lei['categoria'],
-                    numero=acumulador,
-                    defaults={'conteudo': "\n".join(chave)}
+                artigos_para_guardar.append(
+                    ArtigoLei(categoria=lei['categoria'], numero=acumulador, conteudo="\n".join(chave))
                 )
-                total_processado += 1
+
+    ArtigoLei.objects.bulk_create(artigos_para_guardar, batch_size=500)
 
     return Response({
         "status": "Sucesso",
-        "mensagem": f"Operação concluída! {total_processado} artigos foram sincronizados com a base de dados."
+        "mensagem": f"Operação Turbo concluída! {len(artigos_para_guardar)} artigos foram injetados no banco de dados."
     })
-
-
