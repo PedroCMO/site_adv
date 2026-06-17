@@ -8,6 +8,7 @@ export default function Navbar() {
         <li><Link to="/sobre" style={{ color: 'white', textDecoration: 'none' }}>Sobre</Link></li>
         <li><Link to="/equipe" style={{ color: 'white', textDecoration: 'none' }}>Equipe</Link></li>
         <li><Link to="/contato" style={{ color: 'white', textDecoration: 'none' }}>Contato</Link></li>
+        <Link to="/legislacao" style={{ color: 'white', textDecoration: 'none' }}>Legislação</Link>
       </ul>
     </nav>
   )
