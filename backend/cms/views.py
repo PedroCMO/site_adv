@@ -40,7 +40,7 @@ class ImagemSiteViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ImagemSiteSerializer
 
 class ArtigoLeiViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ArtigoLei.objects.all()
+    queryset = ArtigoLei.objects.all().order_by('id') 
     serializer_class = ArtigoLeiSerializer
 
 @api_view(['GET'])
