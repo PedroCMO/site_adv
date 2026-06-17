@@ -50,7 +50,9 @@ export const getLeis = async () => {
     if (!response.ok) {
       throw new Error('Erro na resposta da rede');
     }
-    return await response.json();
+    const data = await response.json();
+    return data.results ? data.results : data;
+    
   } catch (error) {
     console.error("Erro ao buscar leis na API:", error);
     return [];
