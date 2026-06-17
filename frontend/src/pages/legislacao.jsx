@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { categoriasLeis, getLeis } from './services/api';
+import { categoriasLeis, getLeis } from '../services/api';
 
 export default function Legislacao() {
   const [leis, setLeis] = useState([]);

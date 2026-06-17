@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchAreasAtuacao, fetchTextos } from '../services/api' // Importamos os dois serviços
+import { fetchAreasAtuacao, fetchTextos } from '../services/api'
 
 export default function Home() {
   // 1. Busca os textos da página inicial
