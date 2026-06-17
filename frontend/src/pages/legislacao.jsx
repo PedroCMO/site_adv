@@ -1,27 +1,19 @@
 import { useState, useEffect } from 'react';
+import { categoriasLeis, getLeis } from './api';
 
 export default function Legislacao() {
   const [leis, setLeis] = useState([]);
   const [categoriaAtiva, setCategoriaAtiva] = useState('constituicao');
 
-  // As categorias que você tem no banco de dados
-  const categorias = [
-    { id: 'constituicao', nome: 'Constituição Federal' },
-    { id: 'codigo_penal', nome: 'Código Penal' },
-    { id: 'codigo_adm', nome: 'Direito Administrativo' },
-    { id: 'trabalhista', nome: 'Direito do Trabalho' },
-    // ... adicione as outras aqui
-  ];
-
-  // Busca as leis na sua API do Render
   useEffect(() => {
-    fetch('https://api-escritorio.onrender.com/api/leis/')
-      .then(res => res.json())
-      .then(data => setLeis(data))
-      .catch(err => console.error("Erro ao buscar leis:", err));
+    const carregarLeis = async () => {
+      const dados = await getLeis();
+      setLeis(dados);
+    };
+    
+    carregarLeis();
   }, []);
 
-  // Filtra as leis para mostrar apenas a categoria que o usuário clicou
   const leisFiltradas = leis.filter(lei => lei.categoria === categoriaAtiva);
 
   return (
@@ -32,7 +24,7 @@ export default function Legislacao() {
         <div className="p-6">
           <h2 className="text-xl font-bold mb-6">Códigos e Leis</h2>
           <nav className="space-y-2">
-            {categorias.map((cat) => (
+            {categoriasLeis.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setCategoriaAtiva(cat.id)}
@@ -53,7 +45,7 @@ export default function Legislacao() {
       <main className="flex-1 p-10 overflow-y-auto max-h-screen">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-serif text-gray-800 border-b pb-4 mb-8 capitalize">
-            {categorias.find(c => c.id === categoriaAtiva)?.nome}
+            {categoriasLeis.find(c => c.id === categoriaAtiva)?.nome}
           </h1>
 
           <div className="space-y-6">
@@ -66,8 +58,12 @@ export default function Legislacao() {
               </div>
             ))}
             
-            {leisFiltradas.length === 0 && (
+            {leis.length === 0 && (
               <p className="text-gray-500 italic">Carregando artigos...</p>
+            )}
+            
+            {leis.length > 0 && leisFiltradas.length === 0 && (
+              <p className="text-gray-500 italic">Nenhum artigo encontrado para esta categoria.</p>
             )}
           </div>
         </div>

@@ -1,20 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchEscritorio } from '../services/api' // Certifique-se de que o import está correto
+import { fetchEscritorio } from '../services/api'
 
 export default function Contato() {
-  // Chamada da API para pegar todos os escritórios cadastrados
   const { data: escritorios, isLoading, isError, error } = useQuery({
     queryKey: ['dados-escritorio'],
     queryFn: fetchEscritorio,
   })
 
-  // 1. Controle de Carregamento
   if (isLoading) return <p>Carregando as informações de contato...</p>
 
-  // 2. Controle de Erro (Erro de internet, servidor desligado, etc)
   if (isError) return <p>Ocorreu um erro ao buscar os dados: {error.message}</p>
 
-  // 3. Verificação de Dados Vazios
   if (!escritorios || escritorios.length === 0) {
     return <p>Nenhum endereço ou contato cadastrado no sistema do escritório.</p>
   }
@@ -23,7 +19,6 @@ export default function Contato() {
     <div>
       <h1>Nossos Escritórios</h1>
 
-      {/* Listamos todas as sedes que você cadastrou no Django */}
       {escritorios.map((local) => (
         <div key={local.id} style={{ marginBottom: '50px', borderBottom: '1px solid #ccc', paddingBottom: '20px' }}>
           

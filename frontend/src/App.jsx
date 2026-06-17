@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 // Importando o Menu e as Páginas
-import Navbar from './components/Navbar'
+import Navbar from './pages/Navbar'
 import Home from './pages/Home'
 import Sobre from './pages/Sobre'
 import Equipe from './pages/Equipe'
 import Contato from './pages/Contato'
-import Legislacao from './Legislacao'
+import Legislacao from './pages/Legislacao'
 
 function App() {
   return (

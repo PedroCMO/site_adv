@@ -31,3 +31,28 @@ export const fetchImagensSite = async () => {
   if (!resposta.ok) throw new Error('Erro ao buscar imagens do site');
   return resposta.json();
 };
+
+export const categoriasLeis = [
+  { id: 'constituicao', nome: 'Constituição Federal' },
+  { id: 'codigo_penal', nome: 'Código Penal' },
+  { id: 'codigo_adm', nome: 'Direito Administrativo' },
+  { id: 'trabalhista', nome: 'Direito do Trabalho' },
+  { id: 'etica_oab', nome: 'Ética OAB' },
+  { id: 'especializado', nome: 'Direito Especializado' },
+  { id: 'publico', nome: 'Direito Público' },
+  { id: 'tributario', nome: 'Direito Tributário' },
+  { id: 'humanidades', nome: 'Humanidades' }
+];
+
+export const getLeis = async () => {
+  try {
+    const response = await fetch('https://api-escritorio.onrender.com/api/leis/');
+    if (!response.ok) {
+      throw new Error('Erro na resposta da rede');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao buscar leis na API:", error);
+    return [];
+  }
+};
