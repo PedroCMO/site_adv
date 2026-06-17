@@ -114,3 +114,11 @@ class ImagemSite(models.Model):
 
     def __str__(self):
         return f"Imagem para {self.get_pagina_destino_display()} - {self.descricao}"    
+    
+class ArtigoLei(models.Model):
+    categoria = models.CharField(max_length=100)
+    numero = models.CharField(max_length=50)     
+    conteudo = models.TextField()               
+
+    def __str__(self):
+        return f"{self.categoria} - {self.numero}"
