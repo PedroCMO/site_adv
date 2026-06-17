@@ -6,7 +6,7 @@ import Home from './pages/Home'
 import Sobre from './pages/Sobre'
 import Equipe from './pages/Equipe'
 import Contato from './pages/Contato'
-import Legislacao from './pages/Legislacao'
+import Legislacao from './pages/legislacao'
 
 function App() {
   return (
