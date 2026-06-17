@@ -35,12 +35,11 @@ class ImagemSiteViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ImagemSiteSerializer
 
 @api_view(['GET'])
-@permission_classes([IsAdminUser]) # O Escudo: Apenas admins logados podem aceder!
+@permission_classes([IsAdminUser])
 def sincronizar_leis(request):
-    # Aponta para a pasta dados_leis na raiz do projeto
+
     pasta_base = os.path.join(settings.BASE_DIR, 'dados_leis')
 
-    # A sua lista adaptada com a categoria em vez do nome do JSON
     lista_de_leis = [
         {"txt": "base_constitucional/SUPER_BASE_CONSTITUCIONAL.txt", "categoria": "constituicao"},
         {"txt": "bloco_oab_etica/SUPER_BLOCO_OAB_ETICA.txt", "categoria": "etica_oab"},
@@ -57,8 +56,7 @@ def sincronizar_leis(request):
 
     for lei in lista_de_leis:
         caminho_do_arquivo = os.path.join(pasta_base, lei['txt'])
-        
-        # Prevenção: se o ficheiro não existir no Render, ele não quebra, apenas salta
+    
         if not os.path.exists(caminho_do_arquivo):
             continue
 
@@ -92,7 +90,6 @@ def sincronizar_leis(request):
                 if "Disposições Constitucionais Transitórias" in linha_limpa:
                     break
                     
-            # Salvar o último artigo que ficou no acumulador
             if acumulador != "":
                 ArtigoLei.objects.update_or_create(
                     categoria=lei['categoria'],
