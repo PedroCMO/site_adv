@@ -17,5 +17,5 @@ router.register(r'imagens', ImagemSiteViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api/admin/sincronizar-leis/', sincronizar_leis, name='sincronizar_leis'),
+    path('admin/sincronizar-leis/', sincronizar_leis, name='sincronizar_leis'),
 ]
