@@ -1,0 +1,63 @@
+import os
+from django.conf import settings
+from .models import ArtigoLei
+
+def processar_e_injetar_leis():
+    pasta_base = os.path.join(settings.BASE_DIR, 'dados_leis')
+
+    lista_de_leis = [
+        {"txt": "base_constitucional/SUPER_BASE_CONSTITUCIONAL.txt", "categoria": "constituicao"},
+        {"txt": "bloco_oab_etica/SUPER_BLOCO_OAB_ETICA.txt", "categoria": "etica_oab"},
+        {"txt": "bloco_penal/SUPER_BLOCO_PENAL.txt", "categoria": "codigo_penal"},
+        {"txt": "bloco_administrativo/SUPER_BLOCO_ADMINISTRATIVO.txt", "categoria": "codigo_adm"},
+        {"txt": "bloco_especializado/SUPER_BLOCO_ESPECIALIZADO.txt", "categoria": "especializado"},
+        {"txt": "bloco_publico/SUPER_BLOCO_PUBLICO.txt", "categoria": "publico"},
+        {"txt": "bloco_trabalhista/SUPER_BLOCO_TRABALHISTA.txt", "categoria": "trabalhista"},
+        {"txt": "bloco_tributario/SUPER_BLOCO_TRIBUTARIO.txt", "categoria": "tributario"},
+        {"txt": "bloco_humanidades_extra/SUPER_BLOCO_HUMANIDADES_EXTRA.txt", "categoria": "humanidades"}
+    ]
+
+    ArtigoLei.objects.all().delete()
+    
+    artigos_para_guardar = []
+
+    for lei in lista_de_leis:
+        caminho_do_arquivo = os.path.join(pasta_base, lei['txt'])
+        
+        if not os.path.exists(caminho_do_arquivo):
+            continue
+
+        acumulador = ""
+        chave = [] 
+        
+        with open(caminho_do_arquivo, "r", encoding="utf-8") as arquivo:
+            for linha in arquivo:
+                linha_limpa = linha.replace("\xa0", " ").replace("~~", "").strip()
+                
+                if linha_limpa == "":
+                    continue
+
+                linha_fatiada = linha_limpa.split()
+
+                if len(linha_fatiada) > 1 and linha_fatiada[0] == "Art.":
+                    if acumulador != "":
+                        artigos_para_guardar.append(
+                            ArtigoLei(categoria=lei['categoria'], numero=acumulador, conteudo="\n".join(chave))
+                        )
+
+                    chave = []
+                    acumulador = f"{linha_fatiada[0]} {linha_fatiada[1]}"
+
+                chave.append(linha_limpa)
+                
+                if "Disposições Constitucionais Transitórias" in linha_limpa:
+                    break
+                    
+            if acumulador != "":
+                artigos_para_guardar.append(
+                    ArtigoLei(categoria=lei['categoria'], numero=acumulador, conteudo="\n".join(chave))
+                )
+
+    ArtigoLei.objects.bulk_create(artigos_para_guardar, batch_size=500)
+    
+    return len(artigos_para_guardar)

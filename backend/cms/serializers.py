@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import InformacoesEscritorio, Advogado, AreaAtuacao, SecaoTexto, ImagemSite
+from .models import InformacoesEscritorio, Advogado, AreaAtuacao, SecaoTexto, ImagemSite, ArtigoLei
 
 class InformacoesEscritorioSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,4 +23,11 @@ class SecaoTextoSerializer(serializers.ModelSerializer):
 class ImagemSiteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ImagemSite
+        fields = '__all__'
+
+        from .models import ArtigoLei
+
+class ArtigoLeiSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArtigoLei
         fields = '__all__'

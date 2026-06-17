@@ -6,7 +6,8 @@ from .views import (
     AdvogadoViewSet, 
     AreaAtuacaoViewSet, 
     SecaoTextoViewSet,
-    ImagemSiteViewSet
+    ImagemSiteViewSet,
+    ArtigoLeiViewSet
 )
 router = DefaultRouter()
 router.register(r'escritorio', InformacoesEscritorioViewSet)
@@ -14,6 +15,7 @@ router.register(r'advogados', AdvogadoViewSet)
 router.register(r'areas-atuacao', AreaAtuacaoViewSet)
 router.register(r'textos', SecaoTextoViewSet)
 router.register(r'imagens', ImagemSiteViewSet)
+router.register(r'leis', ArtigoLeiViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
