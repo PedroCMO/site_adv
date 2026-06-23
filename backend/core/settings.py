@@ -24,7 +24,8 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
+
+ALLOWED_HOSTS = ['137.131.153.236','localhost', '127.0.0.1', '.onrender.com']
 
 
 # Application definition
@@ -75,22 +76,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
-
-if DATABASE_URL:
-    DATABASES = {
-        'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'site_db',
+        'USER': 'site_user',
+        'PASSWORD': '@Adv181198',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 
 # Password validation
@@ -128,7 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'

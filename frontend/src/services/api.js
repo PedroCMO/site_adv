@@ -1,6 +1,6 @@
 // frontend/src/services/api.js
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+const BASE_URL = import.meta.env.VITE_API_URL || '[http://137.131.153.236/api](http://137.131.153.236/api)';
 
 export const fetchAdvogados = async () => {
   const resposta = await fetch(`${BASE_URL}/advogados/`);
@@ -46,7 +46,7 @@ export const categoriasLeis = [
 
 export const getLeis = async () => {
   try {
-    const response = await fetch('https://api-escritorio.onrender.com/api/leis/');
+    const response = await fetch(`${BASE_URL}/leis/`);
     if (!response.ok) {
       throw new Error('Erro na resposta da rede');
     }
