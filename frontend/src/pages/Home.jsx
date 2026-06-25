@@ -50,11 +50,7 @@ export default function Home() {
         {/* Imagem de Fundo (Vem do modelo ImagemSite) */}
         <div 
           className="absolute inset-0 bg-navy-950 bg-cover bg-center"
-          style={{ 
-            backgroundImage: imagemCapa 
-              ? `url(${imagemCapa})` 
-              : 'url(https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2000&auto=format&fit=crop)' 
-          }}
+          style={imagemCapa ? { backgroundImage: `url(${imagemCapa})` } : {}}
         ></div>
         
         {/* Película escura sobre a imagem */}
