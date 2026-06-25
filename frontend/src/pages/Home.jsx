@@ -4,27 +4,28 @@ import { Link } from 'react-router-dom';
 import { fetchAreasAtuacao, fetchTextos, fetchImagensSite } from '../services/api';
 
 export default function Home() {
-  const { data: textos, isLoading: loadingTextos } = useQuery({
+  const { data: textosData, isLoading: loadingTextos } = useQuery({
     queryKey: ['textos-site'],
     queryFn: fetchTextos,
     staleTime: 0,
     cacheTime: 0,
   });
 
-  const { data: areas, isLoading: loadingAreas } = useQuery({
-    queryKey: ['areas-atuacao', 'v2'], // 'v2' para garantir nova busca
+  const { data: areasData, isLoading: loadingAreas } = useQuery({
+    queryKey: ['areas-atuacao', 'v2'],
     queryFn: fetchAreasAtuacao,
     staleTime: 0,
     cacheTime: 0,
   });
 
-  const { data: imagens, isLoading: loadingImagens } = useQuery({
+  const { data: imagensData, isLoading: loadingImagens } = useQuery({
     queryKey: ['imagens-site'],
     queryFn: fetchImagensSite,
     staleTime: 0,
     cacheTime: 0,
   });
 
+  // Mostra o spinner se qualquer coisa estiver carregando
   if (loadingTextos || loadingAreas || loadingImagens) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -33,8 +34,13 @@ export default function Home() {
     );
   }
 
+  // Tratamento seguro: Se data for undefined, usa array ou objeto vazio
+  const textos = textosData || [];
+  const areas = areasData || [];
+  const imagens = imagensData || [];
+
   const imagemCapa = imagens.find(img => img.pagina_destino === 'home')?.imagem;
-  const textoDestaque = textos.find(t => t.identificador === 'capa_home') || textos[0];
+  const textoDestaque = textos.find(t => t.identificador === 'capa_home') || textos[0] || {};
   const textosSecundarios = textos.filter(t => t.id !== textoDestaque?.id);
 
   return (
@@ -51,10 +57,10 @@ export default function Home() {
         <div className="relative z-20 text-center px-4 max-w-4xl mx-auto mt-16">
           <div className="w-20 h-1 bg-gold-600 mx-auto mb-8"></div>
           <h1 className="text-4xl md:text-6xl text-white font-serif font-bold mb-6 drop-shadow-lg leading-tight">
-            {textoDestaque.titulo}
+            {textoDestaque.titulo || "Defesa Especializada"}
           </h1>
           <p className="text-lg md:text-2xl text-gray-200 mb-10 font-light max-w-3xl mx-auto whitespace-pre-wrap">
-            {textoDestaque.conteudo}
+            {textoDestaque.conteudo || "Aguardando conteúdo..."}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/contato" className="inline-block bg-gold-600 hover:bg-gold-500 text-white px-8 py-4 rounded-sm uppercase tracking-widest font-semibold transition-all duration-300 shadow-lg">
@@ -76,9 +82,6 @@ export default function Home() {
             {areas.map((area) => (
               <div key={area.id} className="bg-white p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group rounded-lg relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-gold-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
-                <svg className="w-12 h-12 text-gold-600 mb-6 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                </svg>
                 <h3 className="text-xl font-bold text-navy-900 mb-4 font-serif">{area.nome}</h3>
                 <p className="text-gray-600 leading-relaxed whitespace-pre-wrap text-sm">
                   {area.especificidades}
