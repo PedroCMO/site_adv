@@ -1,114 +1,149 @@
-import { useQuery } from '@tanstack/react-query'
-import { fetchAreasAtuacao, fetchTextos, fetchImagensSite } from '../services/api'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import { fetchAreasAtuacao, fetchTextos, fetchImagensSite } from '../services/api';
 
 export default function Home() {
-  // 1. Busca os textos da página inicial
-  const { data: textos, isLoading: loadingTextos, isError: errorTextos } = useQuery({
+  // 1. Busca as seções de texto
+  const { data: textos, isLoading: loadingTextos } = useQuery({
     queryKey: ['textos-site'],
     queryFn: fetchTextos,
-  })
+  });
 
   // 2. Busca as áreas de atuação
-  const { data: areas, isLoading: loadingAreas, isError: errorAreas } = useQuery({
+  const { data: areas, isLoading: loadingAreas } = useQuery({
     queryKey: ['areas-atuacao'],
     queryFn: fetchAreasAtuacao,
-  })
+  });
 
-  // 3. Busca imagens do site
-  const { data: imagens } = useQuery({
+  // 3. Busca imagens cadastradas para o site
+  const { data: imagens, isLoading: loadingImagens } = useQuery({
     queryKey: ['imagens-site'],
     queryFn: fetchImagensSite,
-  })
+  });
 
-  // Controle de carregamento e erro unificado
-  if (loadingTextos || loadingAreas) {
+  // Mostra um spinner enquanto carrega da API
+  if (loadingTextos || loadingAreas || loadingImagens) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gold-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Carregando...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-gold-600 border-solid"></div>
       </div>
-    )
+    );
   }
-  if (errorTextos || errorAreas) return <p>Ocorreu um erro ao carregar os dados.</p>
 
-  // Filtrar imagem da home
-  const homeImagem = imagens?.find(img => img.pagina_destino === 'home')
+  // --- LÓGICA DE DISTRIBUIÇÃO DOS DADOS DO SEU MODELO ---
+
+  // Pega a imagem que foi marcada no Django para a 'home'
+  const imagemCapa = imagens?.find(img => img.pagina_destino === 'home')?.imagem;
+
+  // Procura o texto cujo identificador seja "capa_home" ou pega o primeiro que existir
+  const textoDestaque = textos?.find(t => t.identificador === 'capa_home') || textos?.[0];
+  
+  // Pega todos os outros textos para colocar nas secções de "Sobre" mais abaixo
+  const textosSecundarios = textos?.filter(t => t.id !== textoDestaque?.id) || [];
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="relative bg-navy-900 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          {homeImagem?.imagem ? (
-            <img 
-              src={homeImagem.imagem} 
-              alt="Hero Background" 
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-navy-800 to-navy-950"></div>
-          )}
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold mb-6 leading-tight">
-              Excelência Jurídica e
-              <span className="text-gold-400"> Compromisso</span>
-            </h1>
-            <p className="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed">
-              Há mais de [anos] anos oferecendo soluções jurídicas personalizadas com 
-              integridade, dedicação e excelência profissional.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link 
-                to="/contato" 
-                className="bg-gold-600 hover:bg-gold-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors duration-300 shadow-lg"
-              >
-                Agende uma Consulta
-              </Link>
-              <Link 
-                to="/sobre" 
-                className="border-2 border-white text-white hover:bg-white hover:text-navy-900 px-8 py-3 rounded-lg font-semibold transition-colors duration-300"
-              >
-                Conheça o Escritório
-              </Link>
-            </div>
+    <div className="min-h-screen bg-white font-sans">
+      
+      {/* SEÇÃO 1: HERO (Capa) */}
+      <section className="relative w-full h-[85vh] flex items-center justify-center">
+        {/* Imagem de Fundo (Vem do modelo ImagemSite) */}
+        <div 
+          className="absolute inset-0 bg-navy-950 bg-cover bg-center"
+          style={{ 
+            backgroundImage: imagemCapa 
+              ? `url(${imagemCapa})` 
+              : 'url(https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2000&auto=format&fit=crop)' 
+          }}
+        ></div>
+        
+        {/* Película escura sobre a imagem */}
+        <div className="absolute inset-0 bg-black/65 z-10"></div>
+
+        {/* Conteúdo da Capa (Vem do modelo SecaoTexto) */}
+        <div className="relative z-20 text-center px-4 max-w-4xl mx-auto mt-16">
+          <div className="w-20 h-1 bg-gold-600 mx-auto mb-8"></div>
+          <h1 className="text-4xl md:text-6xl text-white font-serif font-bold mb-6 drop-shadow-lg leading-tight">
+            {textoDestaque?.titulo || "Defesa Especializada e Compromisso"}
+          </h1>
+          <p className="text-lg md:text-2xl text-gray-200 mb-10 font-light max-w-3xl mx-auto whitespace-pre-wrap">
+            {textoDestaque?.conteudo || "A excelência que a sua empresa e os seus direitos exigem."}
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              to="/contato" 
+              className="inline-block bg-gold-600 hover:bg-gold-500 text-white px-8 py-4 rounded-sm uppercase tracking-widest font-semibold transition-all duration-300 shadow-lg"
+            >
+              Fale com um Especialista
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Seções de Texto */}
-      {textos && textos.length > 0 && (
-        <section className="py-16 bg-gray-50">
+      {/* SEÇÃO 2: Áreas de Atuação (Vem do modelo AreaAtuacao) */}
+      <section className="py-24 bg-gray-50 border-t-8 border-gold-600">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">Áreas de Atuação</h2>
+            <div className="w-24 h-1 bg-gold-600 mx-auto"></div>
+          </div>
+
+          {(!areas || areas.length === 0) ? (
+            <p className="text-center text-gray-500 italic">Nenhuma área de atuação cadastrada no sistema.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {areas.map((area) => (
+                <div 
+                  key={area.id} 
+                  className="bg-white p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 group rounded-lg relative overflow-hidden"
+                >
+                  <div className="absolute top-0 left-0 w-1 h-full bg-gold-600 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></div>
+                  
+                  {/* Ícone Genérico Dourado */}
+                  <svg className="w-12 h-12 text-gold-600 mb-6 transform group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                  </svg>
+                  
+                  <h3 className="text-xl font-bold text-navy-900 mb-4 font-serif">{area.nome}</h3>
+                  <p className="text-gray-600 leading-relaxed whitespace-pre-wrap text-sm">
+                    {area.especificidades}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* SEÇÃO 3: Outros Textos (Opcional - ex: "Nossa História") */}
+      {textosSecundarios && textosSecundarios.length > 0 && (
+        <section className="py-24 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {textos.map((texto, index) => (
+            {textosSecundarios.map((texto, index) => (
               <div 
                 key={texto.id} 
-                className={`mb-16 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}
+                className={`flex flex-col md:flex-row items-center gap-12 mb-20 ${index % 2 !== 0 ? 'md:flex-row-reverse' : ''}`}
               >
-                <div className="md:flex items-center gap-12">
-                  {texto.imagem_destaque && (
-                    <div className="md:w-1/2 mb-6 md:mb-0">
-                      <img 
-                        src={texto.imagem_destaque} 
-                        alt={texto.titulo} 
-                        className="rounded-lg shadow-xl w-full h-80 object-cover"
-                      />
-                    </div>
-                  )}
-                  <div className={texto.imagem_destaque ? 'md:w-1/2' : 'w-full'}>
-                    {texto.titulo && (
-                      <h2 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-6">
-                        {texto.titulo}
-                      </h2>
-                    )}
-                    <div className="text-gray-700 text-lg leading-relaxed whitespace-pre-wrap">
-                      {texto.conteudo}
-                    </div>
+                {/* Imagem destaque do texto (se existir no SecaoTexto) */}
+                {texto.imagem_destaque && (
+                  <div className="w-full md:w-1/2">
+                    <img 
+                      src={texto.imagem_destaque} 
+                      alt={texto.titulo} 
+                      className="w-full h-[400px] object-cover rounded-lg shadow-xl border-4 border-white"
+                    />
                   </div>
+                )}
+
+                {/* Conteúdo do texto */}
+                <div className={texto.imagem_destaque ? "w-full md:w-1/2" : "w-full max-w-4xl mx-auto text-center"}>
+                  {texto.titulo && (
+                    <h2 className="text-3xl font-serif font-bold text-navy-900 mb-6">{texto.titulo}</h2>
+                  )}
+                  <div className={`w-16 h-1 bg-gold-600 mb-6 ${!texto.imagem_destaque && 'mx-auto'}`}></div>
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap font-sans text-lg">
+                    {texto.conteudo}
+                  </p>
                 </div>
               </div>
             ))}
@@ -116,64 +151,6 @@ export default function Home() {
         </section>
       )}
 
-      {/* Áreas de Atuação */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">
-              Nossas Áreas de Atuação
-            </h2>
-            <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              Oferecemos assessoria jurídica completa em diversas áreas do direito, 
-              sempre com foco na excelência e nas necessidades específicas de cada cliente.
-            </p>
-          </div>
-
-          {areas && areas.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {areas.map((area) => (
-                <div 
-                  key={area.id} 
-                  className="bg-white border border-gray-200 rounded-xl p-8 hover:shadow-xl transition-all duration-300 hover:border-gold-400 group"
-                >
-                  <div className="w-14 h-14 bg-gold-100 rounded-lg flex items-center justify-center mb-6 group-hover:bg-gold-600 transition-colors duration-300">
-                    <svg className="w-8 h-8 text-gold-600 group-hover:text-white transition-colors duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-serif font-bold text-navy-900 mb-4">
-                    {area.nome}
-                  </h3>
-                  <div className="text-gray-600 leading-relaxed whitespace-pre-wrap">
-                    {area.especificidades}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-center text-gray-500">Nenhuma área de atuação cadastrada no sistema.</p>
-          )}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-navy-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6">
-            Precisa de Assessoria Jurídica?
-          </h2>
-          <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
-            Entre em contato conosco para agendar uma consulta e discutir como podemos 
-            ajudá-lo a proteger seus direitos e interesses.
-          </p>
-          <Link 
-            to="/contato" 
-            className="bg-gold-600 hover:bg-gold-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors duration-300 shadow-lg inline-block"
-          >
-            Fale Conosco
-          </Link>
-        </div>
-      </section>
     </div>
-  )
+  );
 }

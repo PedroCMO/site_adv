@@ -1,63 +1,65 @@
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
+  
+  const baseLinkClass = "px-4 py-2 rounded-md transition-all duration-300 font-medium";
+  const activeLinkClass = "bg-gold-600 text-white shadow-md";
+  const inactiveLinkClass = "text-gray-300 hover:text-white hover:bg-navy-800";
 
   return (
-    <nav className="bg-navy-900 shadow-lg sticky top-0 z-50">
+    <nav className="bg-navy-900 border-b-2 border-gold-600 sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gold-600 rounded flex items-center justify-center">
-              <span className="text-white font-serif font-bold text-xl">J</span>
-            </div>
-            <span className="text-white font-serif text-xl font-semibold tracking-wide">
-              Juris Consultoria
-            </span>
-          </Link>
+          
+          {/* Logo / Nome do Escritório (Fixo, pois não existe no models.py) */}
+          <div className="flex-shrink-0 flex items-center">
+            <Link to="/" className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gold-600 rounded flex items-center justify-center shadow-lg">
+                <span className="text-white font-serif font-bold text-xl">C</span>
+              </div>
+              <span className="text-white font-serif font-bold text-xl tracking-wide uppercase">
+                Carvalho <span className="text-gold-500">&</span> Oliveira
+              </span>
+            </Link>
+          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <Link 
-              to="/" 
-              className="text-gray-300 hover:text-gold-400 transition-colors duration-300 font-medium"
-            >
+          {/* Menu Desktop */}
+          <div className="hidden md:flex space-x-2">
+            <Link to="/" className={`${baseLinkClass} ${isActive('/') ? activeLinkClass : inactiveLinkClass}`}>
               Início
             </Link>
-            <Link 
-              to="/sobre" 
-              className="text-gray-300 hover:text-gold-400 transition-colors duration-300 font-medium"
-            >
-              Sobre
+            <Link to="/sobre" className={`${baseLinkClass} ${isActive('/sobre') ? activeLinkClass : inactiveLinkClass}`}>
+              Sobre Nós
             </Link>
-            <Link 
-              to="/equipe" 
-              className="text-gray-300 hover:text-gold-400 transition-colors duration-300 font-medium"
-            >
-              Equipe
+            <Link to="/equipe" className={`${baseLinkClass} ${isActive('/equipe') ? activeLinkClass : inactiveLinkClass}`}>
+              A Equipe
             </Link>
-            <Link 
-              to="/contato" 
-              className="text-gray-300 hover:text-gold-400 transition-colors duration-300 font-medium"
-            >
-              Contato
-            </Link>
-            <Link 
-              to="/legislacao" 
-              className="text-gray-300 hover:text-gold-400 transition-colors duration-300 font-medium"
-            >
+            <Link to="/legislacao" className={`${baseLinkClass} ${isActive('/legislacao') ? activeLinkClass : inactiveLinkClass}`}>
               Legislação
             </Link>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Botão de Contato Desktop */}
+          <div className="hidden md:flex items-center">
+            <Link 
+              to="/contato" 
+              className="border-2 border-gold-600 text-gold-500 hover:bg-gold-600 hover:text-white px-5 py-2 rounded-md font-semibold transition-all duration-300 shadow-md"
+            >
+              Fale Conosco
+            </Link>
+          </div>
+
+          {/* Botão Menu Mobile */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="md:hidden text-gray-300 hover:text-white focus:outline-none"
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {isOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -65,51 +67,22 @@ export default function Navbar() {
               )}
             </svg>
           </button>
+
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Menu Mobile Dropdown */}
       {isOpen && (
-        <div className="md:hidden bg-navy-800 border-t border-navy-700">
-          <div className="px-4 pt-2 pb-4 space-y-2">
-            <Link
-              to="/"
-              className="block text-gray-300 hover:text-gold-400 hover:bg-navy-700 px-3 py-2 rounded-md transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Início
-            </Link>
-            <Link
-              to="/sobre"
-              className="block text-gray-300 hover:text-gold-400 hover:bg-navy-700 px-3 py-2 rounded-md transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Sobre
-            </Link>
-            <Link
-              to="/equipe"
-              className="block text-gray-300 hover:text-gold-400 hover:bg-navy-700 px-3 py-2 rounded-md transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Equipe
-            </Link>
-            <Link
-              to="/contato"
-              className="block text-gray-300 hover:text-gold-400 hover:bg-navy-700 px-3 py-2 rounded-md transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Contato
-            </Link>
-            <Link
-              to="/legislacao"
-              className="block text-gray-300 hover:text-gold-400 hover:bg-navy-700 px-3 py-2 rounded-md transition-colors"
-              onClick={() => setIsOpen(false)}
-            >
-              Legislação
-            </Link>
+        <div className="md:hidden bg-navy-800 border-t border-navy-700 pb-4">
+          <div className="px-4 pt-4 space-y-3">
+            <Link to="/" onClick={() => setIsOpen(false)} className="block text-white hover:text-gold-400 font-medium">Início</Link>
+            <Link to="/sobre" onClick={() => setIsOpen(false)} className="block text-white hover:text-gold-400 font-medium">Sobre</Link>
+            <Link to="/equipe" onClick={() => setIsOpen(false)} className="block text-white hover:text-gold-400 font-medium">Equipe</Link>
+            <Link to="/legislacao" onClick={() => setIsOpen(false)} className="block text-white hover:text-gold-400 font-medium">Legislação</Link>
+            <Link to="/contato" onClick={() => setIsOpen(false)} className="block bg-gold-600 text-white text-center py-2 rounded-md font-semibold">Contato</Link>
           </div>
         </div>
       )}
     </nav>
-  )
+  );
 }
