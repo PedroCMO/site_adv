@@ -4,25 +4,22 @@ import { Link } from 'react-router-dom';
 import { fetchAreasAtuacao, fetchTextos, fetchImagensSite } from '../services/api';
 
 export default function Home() {
-  // 1. Busca as seções de texto
   const { data: textos, isLoading: loadingTextos } = useQuery({
     queryKey: ['textos-site'],
     queryFn: fetchTextos,
   });
 
-  // 2. Busca as áreas de atuação
   const { data: areas, isLoading: loadingAreas } = useQuery({
     queryKey: ['areas-atuacao'],
     queryFn: fetchAreasAtuacao,
+    staleTime: 0, 
+    cacheTime: 0,
   });
 
-  // 3. Busca imagens cadastradas para o site
-const { data: areas, isLoading: loadingAreas } = useQuery({
-  queryKey: ['areas-atuacao'],
-  queryFn: fetchAreasAtuacao,
-  staleTime: 0,    
-  cacheTime: 0,       
-});
+  const { data: imagens, isLoading: loadingImagens } = useQuery({
+    queryKey: ['imagens-site'],
+    queryFn: fetchImagensSite,
+  });
 
   // Mostra um spinner enquanto carrega da API
   if (loadingTextos || loadingAreas || loadingImagens) {
