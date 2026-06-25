@@ -17,10 +17,12 @@ export default function Home() {
   });
 
   // 3. Busca imagens cadastradas para o site
-  const { data: imagens, isLoading: loadingImagens } = useQuery({
-    queryKey: ['imagens-site'],
-    queryFn: fetchImagensSite,
-  });
+const { data: areas, isLoading: loadingAreas } = useQuery({
+  queryKey: ['areas-atuacao'],
+  queryFn: fetchAreasAtuacao,
+  staleTime: 0,    
+  cacheTime: 0,       
+});
 
   // Mostra um spinner enquanto carrega da API
   if (loadingTextos || loadingAreas || loadingImagens) {
