@@ -1,6 +1,6 @@
 // frontend/src/services/api.js
 
-const BASE_URL = import.meta.env.VITE_API_URL || '[/api](/api)';
+const BASE_URL = '/api';
 
 export const fetchAdvogados = async () => {
   const resposta = await fetch(`${BASE_URL}/advogados/`);
