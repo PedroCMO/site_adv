@@ -82,10 +82,6 @@ export default function Home() {
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-navy-900 mb-4">Áreas de Atuação</h2>
             <div className="w-24 h-1 bg-gold-600 mx-auto"></div>
           </div>
-
-          {(!areas || areas.length === 0) ? (
-            <p className="text-center text-gray-500 italic">Nenhuma área de atuação cadastrada no sistema.</p>
-          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {areas.map((area) => (
                 <div 
@@ -106,7 +102,6 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          )}
         </div>
       </section>
 
